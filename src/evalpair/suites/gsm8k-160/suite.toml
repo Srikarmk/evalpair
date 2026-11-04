@@ -1,0 +1,6 @@
+description = "Grade-school maths word problems (GSM8K test), reasoning first, graded on the final number."
+checker = "number"
+max_tokens = 1024
+user = "Solve the following math problem. Reason step by step, then write the final answer on the last line as \"Answer: <number>\".\n\nProblem: {question}"
+license = "MIT"
+source = "openai/gsm8k (test), revision 740312a"

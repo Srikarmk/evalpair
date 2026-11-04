@@ -1,0 +1,6 @@
+description = "Restaurant records to a fixed 8-field JSON object (E2E NLG), graded field by field."
+checker = "json_fields"
+max_tokens = 300
+user = "Convert the restaurant record below into a JSON object with exactly these keys:\n- name: the venue's name\n- eat_type: one of \"restaurant\", \"pub\", \"coffee shop\"\n- food: the type of food served\n- price_range: one of \"cheap\", \"moderate\", \"high\", \"less than £20\", \"£20-25\", \"more than £30\"\n- customer_rating: one of \"low\", \"average\", \"high\", \"1 out of 5\", \"3 out of 5\", \"5 out of 5\"\n- area: one of \"riverside\", \"city centre\"\n- family_friendly: true or false\n- near: a nearby landmark\nUse null for any field the record does not give. Reply with only the JSON object.\n\nRecord:\n{record}"
+license = "CC BY-SA 4.0"
+source = "tuetschek/e2e_nlg_cleaned (test), revision 6f77a74"

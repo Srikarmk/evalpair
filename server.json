@@ -1,0 +1,35 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.Srikarmk/evalpair",
+  "title": "evalpair",
+  "description": "Run LLM eval suites on local or hosted models; compare runs with intervals and a noise floor.",
+  "repository": {
+    "url": "https://github.com/Srikarmk/evalpair",
+    "source": "github"
+  },
+  "version": "0.1.0",
+  "packages": [
+    {
+      "registryType": "pypi",
+      "identifier": "evalpair",
+      "version": "0.1.0",
+      "runtimeHint": "uvx",
+      "transport": { "type": "stdio" },
+      "packageArguments": [{ "type": "positional", "value": "mcp" }],
+      "environmentVariables": [
+        {
+          "name": "EVALPAIR_HOME",
+          "description": "Folder for the call cache, saved runs and your own suites (default ~/.evalpair).",
+          "isRequired": false,
+          "isSecret": false
+        },
+        {
+          "name": "EVALPAIR_API_KEY",
+          "description": "Bearer token for an OpenAI-compatible server, if it needs one (OPENAI_API_KEY also works).",
+          "isRequired": false,
+          "isSecret": true
+        }
+      ]
+    }
+  ]
+}

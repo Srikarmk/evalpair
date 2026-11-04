@@ -1,0 +1,7 @@
+description = "Multiple choice from four high-school MMLU subjects, reasoning first, graded on the letter."
+checker = "choice"
+max_tokens = 768
+group = "subject"
+user = "Answer the following multiple-choice question about {subject_name}. Reason step by step, then write the letter of the correct option on the last line as \"Answer: <letter>\".\n\nQuestion: {question}\n\n{options}"
+license = "MIT"
+source = "cais/mmlu (test: high school biology, geography, macroeconomics, psychology), revision c30699e"
