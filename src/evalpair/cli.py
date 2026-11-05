@@ -48,7 +48,7 @@ def text_summary(s: dict) -> str:
     if s["failures"]:
         lines.append("  failures (unparsed and truncated first):")
         for f in s["failures"]:
-            end = f["reply_end"].replace("\n", " ")[-160:]
+            end = " ".join(f["reply_end"].split())[-160:]  # newlines and tabs as single spaces
             lines.append(f"    {f['id']}: answer {f['answer']!r} via {f['how']}"
                          f"{', truncated' if f['truncated'] else ''}  …{end}")
     return "\n".join(lines)
@@ -57,17 +57,17 @@ def text_summary(s: dict) -> str:
 def text_compare(c: dict) -> str:
     if not c.get("items"):
         return "\n".join(c["notes"])
-    lines = [f"A  {c['a']['run']}: {c['a']['score']['text']}",
-             f"B  {c['b']['run']}: {c['b']['score']['text']}",
+    lines = [f"A            {c['a']['run']}: {c['a']['score']['text']}",
+             f"B            {c['b']['run']}: {c['b']['score']['text']}",
              f"B − A        {c['difference']['text']}",
              f"changed      {c['answers_changed']['text']} of {c['items']} items "
              f"({c['worse_in_b']} worse in B, {c['better_in_b']} better)"]
     for k, f in (c.get("noise_floor") or {}).items():
         lines.append(f"floor ({k.upper()})    {f['change_rate']['text']}; excess {f['excess_over_floor']['text']}")
     lines += ["", c["verdict"]] + [f"Note: {n}" for n in c["notes"]]
-    for kind in ("worse_in_b", "better_in_b"):
+    for kind, label in (("worse_in_b", "worse in B"), ("better_in_b", "better in B")):
         for e in c["examples"][kind]:
-            lines.append(f"  {kind.replace('_', ' ')}: {e['id']}  {e['a_answer']!r} → {e['b_answer']!r}")
+            lines.append(f"  {label + ':':<13}{e['id']}  {e['a_answer']!r} → {e['b_answer']!r}")
     return "\n".join(lines)
 
 

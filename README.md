@@ -34,8 +34,8 @@ A real comparison: Ollama's default 4-bit Llama 3.1 8B against its 2-bit build, 
 
 ```
 $ evalpair compare llama-q4 llama-q2
-A  llama-q4: 84.4% [79.4%, 90.0%]
-B  llama-q2: 60.6% [53.1%, 68.1%]
+A            llama-q4: 84.4% [79.4%, 90.0%]
+B            llama-q2: 60.6% [53.1%, 68.1%]
 B − A        -23.8 pp [-31.9 pp, -16.2 pp]
 changed      40.6% [33.1%, 48.1%] of 160 items (43 worse in B, 5 better)
 floor (A)    0.0% [0.0%, 0.0%]; excess +40.6 pp [+33.1 pp, +48.1 pp]
@@ -43,7 +43,7 @@ floor (A)    0.0% [0.0%, 0.0%]; excess +40.6 pp [+33.1 pp, +48.1 pp]
 B scores lower than A: -23.8 pp [-31.9 pp, -16.2 pp], paired over 160 items. Answers changed on 40.6% of
 items (43 got worse, 5 better). The noise floor (the same model asked twice) is 0.0% for A, so the change
 is beyond noise.
-  worse in b: gsm8k-0259  '168' → '52'
+  worse in B:  gsm8k-0259  '168' → '52'
   ...
 ```
 
