@@ -29,6 +29,26 @@ the paired difference with its interval, how many items got worse and better, th
 a plain-language verdict: whether the score difference is distinguishable from zero, and whether the answers
 moved more than the same model asked twice.
 
+A real comparison: Ollama's default 4-bit Llama 3.1 8B against its 2-bit build, on an M5 Pro laptop
+(`--num-ctx 4096`; about 40 minutes for both runs):
+
+```
+$ evalpair compare llama-q4 llama-q2
+A  llama-q4: 84.4% [79.4%, 90.0%]
+B  llama-q2: 60.6% [53.1%, 68.1%]
+B − A        -23.8 pp [-31.9 pp, -16.2 pp]
+changed      40.6% [33.1%, 48.1%] of 160 items (43 worse in B, 5 better)
+floor (A)    0.0% [0.0%, 0.0%]; excess +40.6 pp [+33.1 pp, +48.1 pp]
+
+B scores lower than A: -23.8 pp [-31.9 pp, -16.2 pp], paired over 160 items. Answers changed on 40.6% of
+items (43 got worse, 5 better). The noise floor (the same model asked twice) is 0.0% for A, so the change
+is beyond noise.
+  worse in b: gsm8k-0259  '168' → '52'
+  ...
+```
+
+Both scores are the ones the quantization study measured for these builds on the same items.
+
 Interrupt a run and run it again: every reply is cached, so it picks up where it stopped.
 
 ## As an MCP server
@@ -103,7 +123,7 @@ else is shown as indented JSON. Use `{{` and `}}` for literal braces.
 | `json_fields` | the share of the gold object's fields the reply's JSON gets right (null must be null) | an object |
 
 Checkers are deterministic code: no LLM grades another LLM here. The `number`, `choice` and `json_fields`
-parsers come from the studies, and re-scoring the quantization study's 7,520 saved replies with them gives
+parsers come from the studies, and re-scoring all 9,870 replies from the quantization study's main run with them gives
 the study's own scores on every one (`scripts/check_against_studies.py`).
 
 ## How the numbers are computed

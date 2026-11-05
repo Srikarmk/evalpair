@@ -69,3 +69,10 @@ def test_check_json_fields():
     assert check_json_fields("sorry", {"gold": gold}, {}).score == 0
     with pytest.raises(ValueError):
         check_json_fields("{}", {"id": "x", "gold": "flat"}, {})
+
+
+def test_space_as_thousands_separator_on_the_answer_line():
+    assert parse_number("The difference is $409 500 - $400 000 = $9 500.\n\nAnswer: $9 500")[0] == "9500"
+    assert parse_number("Answer: 1 250 000")[0] == "1250000"
+    assert parse_number("so \\boxed{12 000}")[0] == "12000"
+    assert parse_number("Answer: 3 apples and 450 grams")[0] == "3"

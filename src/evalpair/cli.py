@@ -124,12 +124,17 @@ def main(argv: list[str] | None = None) -> None:
             be = make_backend(h, args.backend, args.model, args.base_url, args.temperature, args.seed,
                               args.num_ctx, think)
 
+            tty = sys.stderr.isatty()
+
             def progress(done, total):
-                if done == total or done % 10 == 0:
+                if tty and (done == total or done % 10 == 0):
                     print(f"\r{done}/{total}", end="", file=sys.stderr, flush=True)
+                elif not tty and (done == total or done % 50 == 0):  # a log file: whole lines, fewer of them
+                    print(f"{done}/{total}", file=sys.stderr, flush=True)
             from .runner import run
             meta = run(suite, be, h, args.limit, args.repeat, args.workers, args.label, progress)
-            print(file=sys.stderr)
+            if tty:
+                print(file=sys.stderr)
             m, rows = store.load(h, meta["run"])
             _print(analysis.summarize(m, rows), args.json, text_summary)
         elif args.cmd == "runs":

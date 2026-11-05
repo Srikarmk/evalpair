@@ -37,6 +37,12 @@ def _clean(text: str) -> str:
     return text.replace("**", "").replace("\\(", "").replace("\\)", "")
 
 
+def _join_groups(s: str) -> str:
+    """Read "9 500" (a space, no-break or thin space between thousands) as "9500". Used only on an
+    answer line or a \\boxed{}, where a space between digit groups is one number, not two."""
+    return re.sub(r"(?<=\d)[ \u00a0\u202f](?=\d{3}\b)", "", s)
+
+
 def canon_number(s: Any) -> str | None:
     s = str(s).replace(",", "").replace("$", "").strip()
     try:
@@ -54,12 +60,12 @@ def parse_number(text: str) -> tuple[str | None, str]:
     t = _clean(text)
     cues = list(re.finditer(rf"(?m)^\s*[#>*\- ]*{CUE}\s*[:：]\s*(.*)$", t))
     if cues:
-        m = re.search(NUM, cues[-1].group(1).replace("$", ""))
+        m = re.search(NUM, _join_groups(cues[-1].group(1).replace("$", "")))
         if m:
             return canon_number(m.group(0)), "cue"
     boxed = re.findall(r"\\boxed\{([^{}]*)\}", t)
     if boxed:
-        m = re.search(NUM, boxed[-1])
+        m = re.search(NUM, _join_groups(boxed[-1]))
         if m:
             return canon_number(m.group(0)), "boxed"
     nums = re.findall(NUM, t.replace("$", ""))
