@@ -3,6 +3,7 @@ import json
 import pytest
 
 from conftest import write_suite
+from evalpair import __version__
 from evalpair.cli import main
 
 
@@ -12,7 +13,7 @@ def test_suites_and_version(home, capsys):
     assert "gsm8k-160" in out and "160 items" in out
     with pytest.raises(SystemExit):
         main(["--version"])
-    assert capsys.readouterr().out.startswith("evalpair 0.1.1")
+    assert capsys.readouterr().out.startswith(f"evalpair {__version__}")
 
 
 def test_run_show_compare(home, fake, capsys):
