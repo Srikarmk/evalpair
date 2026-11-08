@@ -1,6 +1,6 @@
 [project]
 name = "evalpair"
-version = "0.1.1"
+version = "0.2.0"
 description = "Run an LLM eval suite against a local or hosted model, cache every call, and compare two runs item by item with bootstrap intervals and a measured noise floor. CLI and MCP server."
 readme = "README.md"
 requires-python = ">=3.11"
