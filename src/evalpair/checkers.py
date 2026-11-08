@@ -275,7 +275,10 @@ def chrf(hyp: str, ref: str, order: int = 6, beta: float = 2.0) -> float:
 def _unfence(t: str) -> str:
     """Drop a code fence wrapped around the whole reply, which small models often add."""
     m = re.fullmatch(r"\s*```[\w-]*\n(.*?)\n?```\s*", t, flags=re.S)
-    return m.group(1) if m else t
+    if m:
+        return m.group(1)
+    m = re.match(r"\s*```[\w-]*\n", t)  # opened but never closed: the reply ran out of tokens
+    return t[m.end():] if m else t
 
 
 def check_chrf(text: str, item: dict, cfg: dict) -> Check:

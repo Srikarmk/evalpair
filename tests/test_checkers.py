@@ -94,6 +94,8 @@ def test_check_chrf_first_line_and_fence():
     item = {"id": "c1", "gold": "README: link the live site\n\nThe body differs."}
     c = check_chrf("```\nREADME: link the live site\n\nSomething else entirely.\n```", item, {"line": "first"})
     assert c.score == 1.0 and c.answer == "README: link the live site"
+    assert check_chrf("```markdown\nREADME: link the live site\n\nCut off by the token lim", item,
+                      {"line": "first"}).score == 1.0
     assert check_chrf("   ", item, {}).score == 0.0
     best = check_chrf("Fix the parser", {"id": "c2", "gold": ["Unrelated", "Fix the parser"]}, {})
     assert best.score == 1.0
