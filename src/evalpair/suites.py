@@ -6,7 +6,7 @@ hash covers its spec and items, so two runs are only compared when they answered
 suite.toml:
 
     description = "What the suite measures"
-    checker = "number"            # number | choice | exact | contains | regex | json_fields
+    checker = "number"            # number | choice | exact | contains | regex | json_fields | chrf
     max_tokens = 1024             # optional; temperature, seed and num_ctx are run options
     system = "..."                # optional
     user = "Problem: {question}"  # {field} is filled from the item; {{ and }} for literal braces

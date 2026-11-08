@@ -242,7 +242,58 @@ def check_json_fields(text: str, item: dict, cfg: dict) -> Check:
     return Check(answer, sum(ok.values()) / len(ok), "strict json" if strict else "json in text")
 
 
+def _ngrams(s: str, n: int) -> dict[str, int]:
+    out: dict[str, int] = {}
+    for i in range(len(s) - n + 1):
+        out[s[i:i + n]] = out.get(s[i:i + n], 0) + 1
+    return out
+
+
+def chrf(hyp: str, ref: str, order: int = 6, beta: float = 2.0) -> float:
+    """Sentence chrF in [0, 1], computed as sacreBLEU's CHRF(char_order=6, word_order=0, beta=2) does:
+    whitespace removed, character n-grams 1..6, precision and recall averaged over the orders both sides
+    have, then the F-beta of those averages (recall weighted beta times as much as precision)."""
+    hyp, ref = "".join(hyp.split()), "".join(ref.split())
+    eps, factor = 1e-16, beta ** 2
+    avg_p = avg_r = 0.0
+    effective = 0
+    for n in range(1, order + 1):
+        h, r = _ngrams(hyp, n), _ngrams(ref, n)
+        nh, nr = sum(h.values()), sum(r.values())
+        match = sum(min(c, r[g]) for g, c in h.items() if g in r)
+        avg_p += match / nh if nh else eps
+        avg_r += match / nr if nr else eps
+        effective += bool(nh and nr)
+    if not effective:
+        return 0.0
+    avg_p, avg_r = avg_p / effective, avg_r / effective
+    if not avg_p + avg_r:
+        return 0.0
+    return (1 + factor) * avg_p * avg_r / (factor * avg_p + avg_r)
+
+
+def _unfence(t: str) -> str:
+    """Drop a code fence wrapped around the whole reply, which small models often add."""
+    m = re.fullmatch(r"\s*```[\w-]*\n(.*?)\n?```\s*", t, flags=re.S)
+    return m.group(1) if m else t
+
+
+def check_chrf(text: str, item: dict, cfg: dict) -> Check:
+    """chrF between the reply and the gold text (the best of several golds), for free text with a reference,
+    such as a commit message or a summary. `line = "first"` compares only the first non-empty line of each,
+    e.g. a commit message's subject. Case-sensitive, as sacreBLEU's chrF is."""
+    t = _unfence(_clean(text)).strip()
+    golds = item["gold"] if isinstance(item["gold"], list) else [item["gold"]]
+    if cfg.get("line") == "first":
+        first = lambda s: next((x.strip() for x in str(s).splitlines() if x.strip()), "")
+        t, golds = first(t), [first(g) for g in golds]
+    if not t:
+        return Check(None, 0.0, "empty")
+    return Check(t, max(chrf(t, str(g)) for g in golds), "chrf")
+
+
 CHECKERS: dict[str, Callable[[str, dict, dict], Check]] = {
+    "chrf": check_chrf,
     "number": check_number,
     "choice": check_choice,
     "exact": check_exact,

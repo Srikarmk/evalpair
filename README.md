@@ -121,6 +121,7 @@ else is shown as indented JSON. Use `{{` and `}}` for literal braces.
 | `contains` | whether a gold string appears as whole words | a string or list |
 | `regex` | the last match of `checker_options.pattern` (first group) | a string or list |
 | `json_fields` | the share of the gold object's fields the reply's JSON gets right (null must be null) | an object |
+| `chrf` | character n-gram F-score (sacreBLEU's chrF) against a reference text, for free text such as commit messages or summaries; `checker_options.line = "first"` compares first lines only | a string or list |
 
 Checkers are deterministic code: no LLM grades another LLM here. The `number`, `choice` and `json_fields`
 parsers come from the studies, and re-scoring all 9,870 replies from the quantization study's main run with them gives

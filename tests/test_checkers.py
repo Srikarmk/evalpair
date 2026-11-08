@@ -1,6 +1,6 @@
 import pytest
 
-from evalpair.checkers import (canon_number, check_choice, check_contains, check_exact, check_json_fields,
+from evalpair.checkers import (canon_number, check_choice, check_chrf, chrf, check_contains, check_exact, check_json_fields,
                                check_number, check_regex, parse_choice, parse_json, parse_number)
 
 
@@ -76,3 +76,24 @@ def test_space_as_thousands_separator_on_the_answer_line():
     assert parse_number("Answer: 1 250 000")[0] == "1250000"
     assert parse_number("so \\boxed{12 000}")[0] == "12000"
     assert parse_number("Answer: 3 apples and 450 grams")[0] == "3"
+
+
+def test_chrf_matches_sacrebleu():
+    # reference values from sacrebleu 2.x: CHRF().sentence_score(hyp, [ref]).score / 100
+    cases = [("Add a chrF checker for free-text replies", "Add a chrF checker to evalpair", 0.555569),
+             ("Fix the parser", "Fix the number parser on answer lines", 0.275346),
+             ("x", "Rebuild gems, nitro, orb and item box", 0.04),
+             ("ab", "abc", 0.636364)]
+    for hyp, ref, want in cases:
+        assert abs(chrf(hyp, ref) - want) < 1e-6
+    assert chrf("same words", "same words") == 1.0
+    assert chrf("", "abc") == 0.0
+
+
+def test_check_chrf_first_line_and_fence():
+    item = {"id": "c1", "gold": "README: link the live site\n\nThe body differs."}
+    c = check_chrf("```\nREADME: link the live site\n\nSomething else entirely.\n```", item, {"line": "first"})
+    assert c.score == 1.0 and c.answer == "README: link the live site"
+    assert check_chrf("   ", item, {}).score == 0.0
+    best = check_chrf("Fix the parser", {"id": "c2", "gold": ["Unrelated", "Fix the parser"]}, {})
+    assert best.score == 1.0
